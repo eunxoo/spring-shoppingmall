@@ -8,9 +8,11 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.shoppingmall.member.Member.fromDtoToEntity;
 import static com.example.shoppingmall.utils.ApiUtils.error;
@@ -23,21 +25,31 @@ import static com.example.shoppingmall.utils.ApiUtils.success;
 public class MemberController {
     private MemberService memberService;
 
-    @PostMapping("/join/res/en") //before
-    public ResponseEntity<String> joinByResponseEntity(@RequestBody MemberDto memberDto) {
-        if (isDuplicateId(memberDto)) {
-            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-        }
-        Member requestMember = memberDto.convertToEntity();
-        String userId = memberService.join(requestMember);
+//    @PostMapping("/join/res/en") //before
+//    public ResponseEntity<String> joinByResponseEntity(@RequestBody MemberDto memberDto) {
+//        if (isDuplicateId(memberDto)) {
+//            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
+//        }
+//        Member requestMember = memberDto.convertToEntity();
+//        String userId = memberService.join(requestMember);
+//
+//        return new ResponseEntity<>(userId, HttpStatus.OK);
+//    }
 
-        return new ResponseEntity<>(userId, HttpStatus.OK);
-    }
-
-    @PostMapping("/join/api/result") // after
-    public ApiUtils.ApiResult<String> joinByApiResult(@Valid @RequestBody MemberDto memberDto, Errors errors) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 예외 상태 코드
+    @ExceptionHandler(IllegalArgumentException.class)
+    @PostMapping("/join") // after
+    public ApiUtils.ApiResult join(@Valid @RequestBody MemberDto memberDto, Errors errors) {
         if (errors.hasErrors()) {
-            return error("Validation errors", HttpStatus.BAD_REQUEST, errors.getAllErrors());
+            Map<String, String> errorMessages = new HashMap<>();
+
+            for(FieldError error : errors.getFieldErrors()){
+                String errorField = error.getField();
+                String errorMessage = error.getDefaultMessage();
+                errorMessages.put(errorField, errorMessage);
+            }
+
+            return error(errorMessages, HttpStatus.BAD_REQUEST);
         }
 
         if (isDuplicateId(memberDto)) {
@@ -52,6 +64,8 @@ public class MemberController {
 
     private boolean isDuplicateId(MemberDto memberDto) {
         return memberService.checkDuplicateId(memberDto.getUserId());
+
+
     }
 
     @PostMapping("/checkId")
