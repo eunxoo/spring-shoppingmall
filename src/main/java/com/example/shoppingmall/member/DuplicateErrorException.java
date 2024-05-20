@@ -1,4 +1,4 @@
-package com.example.shoppingmall.exception;
+package com.example.shoppingmall.member;
 
 public class DuplicateErrorException extends Exception{
     private String message;

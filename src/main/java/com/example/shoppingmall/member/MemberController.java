@@ -54,22 +54,6 @@ public class MemberController {
         return memberService.checkDuplicateId(memberDto.getUserId());
     }
 
-    //유효성 검사하다가 에러가 터지면 호출되는 예외 처리 메소드
-//    @ExceptionHandler // (MethodArgumentNotValidException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ApiUtils.ApiResult<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException errors){
-//        Map<String, String> errorMessages = new HashMap<>();
-//
-//        for (FieldError error : errors.getFieldErrors()) {
-//            String errorField = error.getField();
-//            String errorMessage = error.getDefaultMessage();
-//            errorMessages.put(errorField, errorMessage);
-//        }
-//
-//        return error(errorMessages, HttpStatus.BAD_REQUEST);
-//
-//    }
-
     @PostMapping("/checkId")
     public ResponseEntity<Boolean> checkId(@RequestBody String id) {
         boolean dupID = memberService.checkId(id);

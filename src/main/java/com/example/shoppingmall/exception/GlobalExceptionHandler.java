@@ -1,6 +1,7 @@
 package com.example.shoppingmall.exception;
 
 import com.example.shoppingmall.utils.ApiUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,6 +15,7 @@ import java.util.Map;
 import static com.example.shoppingmall.utils.ApiUtils.error;
 
 //유효성 검사하다가 에러가 터지면 호출되는 예외 처리 메소드
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler // (MethodArgumentNotValidException.class)
@@ -27,6 +29,7 @@ public class GlobalExceptionHandler {
             errorMessages.put(errorField, errorMessage);
         }
 
+        log.info("errorMessages={}",errorMessages.toString());
         return error(errorMessages, HttpStatus.BAD_REQUEST);
 
     }
