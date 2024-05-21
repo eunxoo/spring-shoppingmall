@@ -1,11 +1,11 @@
 package com.example.shoppingmall.member;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,31 +14,34 @@ public class MemberRepository {
     Map<String, Member> memberTable = new HashMap<>();
 
     @Autowired
-    DataSource dataSource;
-
-    @Autowired
     EntityManager entityManager;
 
-    public void makeConnection(){
-        DataSourceUtils.getConnection(dataSource);
+    public void save(Member member) {
+        entityManager.persist(member);
     }
 
-    public String save(Member member) {
-        if(memberTable.get(member.getUserId()) == null){
-            memberTable.put(member.getUserId(), member);
-        } else {
-            return "dup";
-        }
-
-        Member savedMember = memberTable.get(member.getUserId());
-        return savedMember.getUserId();
+    public Member findById(int id){
+        return entityManager.find(Member.class, id);
     }
-
-    public Member findById(String userId) {
-        return memberTable.get(userId);
+    public Member findByUserId(String userId) {
+        return entityManager.createQuery("select m from Member m where m.userId = :userId", Member.class)
+                .setParameter("userId", userId).getSingleResult();
     }
 
     public boolean checkId(String id) {
         return memberTable.get(id) != null;
+    }
+
+    public Member login(LoginForm loginForm) {
+        String jpql = "SELECT m FROM Member m WHERE m.userId = :userId AND m.pw = :pw";
+        TypedQuery<Member> query = entityManager.createQuery(jpql, Member.class);
+        query.setParameter("userId", loginForm.getUserId());
+        query.setParameter("pw", loginForm.getPw());
+
+        try {
+            return query.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

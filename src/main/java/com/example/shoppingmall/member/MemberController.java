@@ -25,23 +25,6 @@ import static com.example.shoppingmall.utils.ApiUtils.success;
 @RestController
 public class MemberController {
     private MemberService memberService;
-
-//    @PostMapping("/join/res/en") //before
-//    public ResponseEntity<String> joinByResponseEntity(@RequestBody MemberDto memberDto) {
-//        if (isDuplicateId(memberDto)) {
-//            return new ResponseEntity<>(null, HttpStatus.CONFLICT);
-//        }
-//        Member requestMember = memberDto.convertToEntity();
-//        String userId = memberService.join(requestMember);
-//
-//        return new ResponseEntity<>(userId, HttpStatus.OK);
-//    }
-
-    @GetMapping("/datasource")
-    public void makeConnection(){
-        memberService.makeConnection();
-        log.info("datasource");
-    }
     @PostMapping("/join") // after
     public ApiUtils.ApiResult join(@Valid @RequestBody MemberDto memberDto) {
 
@@ -63,6 +46,12 @@ public class MemberController {
     public ResponseEntity<Boolean> checkId(@RequestBody String id) {
         boolean dupID = memberService.checkId(id);
         return new ResponseEntity<>(dupID, HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public ApiUtils.ApiResult login(@RequestBody LoginForm loginForm) {
+        Member loginedMember = memberService.login(loginForm);
+        return success(loginedMember);
     }
 
 }

@@ -6,7 +6,12 @@ import lombok.Getter;
 
 @Getter
 public class MemberDto {
-    @JsonProperty("user_id")
+    // MemberRequestDto, MemberResponseDto로 나누기 (id 유무)
+
+    // SignupReqDto, SignupResDto
+    // LoginReqDto, LoginResDto
+    private int id;
+
     @NotBlank (message = "id는 필수입니다.")
     private String userId;
 

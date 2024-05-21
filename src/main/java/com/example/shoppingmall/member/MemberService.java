@@ -1,15 +1,17 @@
 package com.example.shoppingmall.member;
 
 import lombok.AllArgsConstructor;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
+    @Transactional
     public String join(Member member) {
-        return memberRepository.save(member);
+        memberRepository.save(member);
+        return memberRepository.findByUserId(member.getUserId()).getUserId();
     }
 
 
@@ -18,14 +20,14 @@ public class MemberService {
     }
 
     public boolean checkDuplicateId(String userId) {
-        Member existMember = memberRepository.findById(userId);
+        Member existMember = memberRepository.findByUserId(userId);
         if(existMember == null)
             return false;
         else
             return true;
     }
 
-    public void makeConnection() {
-        memberRepository.makeConnection();
+    public Member login(LoginForm loginForm) {
+       return memberRepository.login(loginForm);
     }
 }
