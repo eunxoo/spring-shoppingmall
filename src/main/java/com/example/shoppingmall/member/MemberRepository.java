@@ -1,14 +1,27 @@
 package com.example.shoppingmall.member;
 
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
+import jakarta.persistence.EntityManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
 @Repository
 public class MemberRepository {
     Map<String, Member> memberTable = new HashMap<>();
+
+    @Autowired
+    DataSource dataSource;
+
+    @Autowired
+    EntityManager entityManager;
+
+    public void makeConnection(){
+        DataSourceUtils.getConnection(dataSource);
+    }
 
     public String save(Member member) {
         if(memberTable.get(member.getUserId()) == null){
@@ -23,21 +36,6 @@ public class MemberRepository {
 
     public Member findById(String userId) {
         return memberTable.get(userId);
-    }
-
-    public OAuth2ResourceServerProperties.Jwt login(LoginForm loginForm) {
-        for(int i = 0; i < memberTable.size() ; i++){
-            if(memberTable.get(i).getUserId() == loginForm.getUserId()){
-                if(memberTable.get(i).getPw() == loginForm.getPw()){
-                    return new OAuth2ResourceServerProperties.Jwt();
-                } else{
-                    System.out.println("비번 틀림");
-                }
-            }else {
-                System.out.println("잘못된 id");
-            }
-        }
-        return new OAuth2ResourceServerProperties.Jwt();
     }
 
     public boolean checkId(String id) {

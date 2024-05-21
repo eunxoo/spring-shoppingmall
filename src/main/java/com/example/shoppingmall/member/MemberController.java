@@ -37,6 +37,11 @@ public class MemberController {
 //        return new ResponseEntity<>(userId, HttpStatus.OK);
 //    }
 
+    @GetMapping("/datasource")
+    public void makeConnection(){
+        memberService.makeConnection();
+        log.info("datasource");
+    }
     @PostMapping("/join") // after
     public ApiUtils.ApiResult join(@Valid @RequestBody MemberDto memberDto) {
 
@@ -60,9 +65,4 @@ public class MemberController {
         return new ResponseEntity<>(dupID, HttpStatus.OK);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<OAuth2ResourceServerProperties.Jwt> login(@RequestBody LoginForm loginForm) {
-        OAuth2ResourceServerProperties.Jwt login = memberService.login(loginForm);
-        return new ResponseEntity<>(login, HttpStatus.OK);
-    }
 }

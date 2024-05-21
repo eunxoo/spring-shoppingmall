@@ -12,9 +12,6 @@ public class MemberService {
         return memberRepository.save(member);
     }
 
-    public OAuth2ResourceServerProperties.Jwt login(LoginForm loginForm) {
-        return memberRepository.login(loginForm);
-    }
 
     public boolean checkId(String id) {
         return memberRepository.checkId(id);
@@ -26,5 +23,9 @@ public class MemberService {
             return false;
         else
             return true;
+    }
+
+    public void makeConnection() {
+        memberRepository.makeConnection();
     }
 }
