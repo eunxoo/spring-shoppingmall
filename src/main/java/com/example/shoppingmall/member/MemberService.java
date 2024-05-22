@@ -8,10 +8,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
     private MemberRepository memberRepository;
+    private MemberJpaRepository memberJPARepository;
     @Transactional
     public String join(Member member) {
-        memberRepository.save(member);
-        return memberRepository.findByUserId(member.getUserId()).getUserId();
+//        memberRepository.save(member);
+//        return memberRepository.findByUserId(member.getUserId()).getUserId();
+        memberJPARepository.save(member);
+        return memberJPARepository.findByUserId(member.getUserId())
+                .map(Member::getUserId)
+                .orElseThrow(() -> new RuntimeException("Member not found userId" + member.getUserId()));
     }
 
 
@@ -20,11 +25,12 @@ public class MemberService {
     }
 
     public boolean checkDuplicateId(String userId) {
-        Member existMember = memberRepository.findByUserId(userId);
-        if(existMember == null)
-            return false;
-        else
-            return true;
+//        Member existMember = memberRepository.findByUserId(userId);
+//        if (existMember == null)
+//            return false;
+//        else
+//            return true;
+        return memberJPARepository.findByUserId(userId).isPresent();
     }
 
     public Member login(LoginForm loginForm) {

@@ -3,18 +3,27 @@ package com.example.shoppingmall.member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
-public class MemberRepository {
+public class MemberRepository  {
     Map<String, Member> memberTable = new HashMap<>();
+
+//    @Override
+//     public Member save(Member member);
+//
+//    @Override
+//    Optional<Member> findById(Integer integer);
+
 
     @Autowired
     EntityManager entityManager;
+
 
     public void save(Member member) {
         entityManager.persist(member);
@@ -24,8 +33,16 @@ public class MemberRepository {
         return entityManager.find(Member.class, id);
     }
     public Member findByUserId(String userId) {
-        return entityManager.createQuery("select m from Member m where m.userId = :userId", Member.class)
-                .setParameter("userId", userId).getSingleResult();
+        String jpql = "SELECT m FROM Member m WHERE m.userId = :userId";
+//        try {
+//            return entityManager.createQuery(jpql, Member.class)
+//                    .setParameter("userId", userId).getSingleResult();
+//        } catch (NoResultException e) {
+//            return null;
+//        }
+        return entityManager.createQuery(jpql, Member.class)
+                    .setParameter("userId", userId).getSingleResult();
+
     }
 
     public boolean checkId(String id) {
