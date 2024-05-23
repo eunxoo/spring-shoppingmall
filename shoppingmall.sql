@@ -15,7 +15,7 @@ CREATE TABLE Product (
     price INT,
     description VARCHAR(500),
     img VARCHAR(255),
-    categoryId INT DEFAULT 0
+    category_id INT DEFAULT 0
 );
 
 /*

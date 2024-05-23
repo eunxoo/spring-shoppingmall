@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,17 +37,14 @@ import static com.example.shoppingmall.utils.ApiUtils.success;
     }
 
     @GetMapping("/products")
-    public ApiUtils.ApiResult findProducts(@RequestParam int limit, @RequestParam int currentPage, @RequestParam(required = false) Integer categoryId) {
-        log.info("limit = {}", limit);
-        log.info("currentPage = {}", currentPage);
-        log.info("categoryId = {}", categoryId);
+    public ApiUtils.ApiResult findProducts(@PageableDefault(size = 10) Pageable pageable, @RequestParam(required = false) Integer categoryId) {
 
         // TODO null 체크는 어디서 해야할까?
         if(categoryId == null){
-            List<Product> products = productService.findProducts(limit, currentPage);
+            List<Product> products = productService.findProducts(pageable);
             return success(products, HttpStatus.OK);
         } else {
-            List<Product> products = productService.findProducts(limit, currentPage, categoryId);
+            List<Product> products = productService.findProducts(pageable, categoryId);
             return success(products, HttpStatus.OK);
         }
 
