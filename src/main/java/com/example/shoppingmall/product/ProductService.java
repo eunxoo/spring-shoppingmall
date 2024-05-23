@@ -11,7 +11,8 @@ public class ProductService {
 
     private ProductRepository productRepository;
 
-    public Product registerProduct(Product product){
+    public Product registerProduct(ProductDto productDto){
+        Product product = productDto.convertToEntity();
         return productRepository.save(product);
     }
 

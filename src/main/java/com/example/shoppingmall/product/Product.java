@@ -13,5 +13,14 @@ public class Product {
     private String img;
     private int categoryId;
     // TODO setter는 DTO 등장하고 지우러 오자!!
+
+
+    public Product(String name, int price, String description, String img, int categoryId) {
+        this.name = name;
+        this.price = price;
+        this.description = description;
+        this.img = img;
+        this.categoryId = categoryId;
+    }
 }
 
