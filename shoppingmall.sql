@@ -9,11 +9,22 @@ CREATE TABLE Member (
     contact VARCHAR(13) NOT NULL COMMENT 'Contact'
 );
 
+CREATE TABLE Product (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    price INT,
+    description VARCHAR(500),
+    img VARCHAR(255),
+    categoryId INT DEFAULT 0
+);
 
 /*
-   private String userId;
-    private String pw;
+   public class Product {
+    private int id;
     private String name;
-    private String email;
-    private String contact;
+    private int price;
+    private String description;
+    private String img;
+    private int categoryId;
+}
  */

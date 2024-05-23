@@ -1,6 +1,8 @@
 package com.example.shoppingmall.product;
 
+import com.example.shoppingmall.utils.ApiUtils;
 import com.example.shoppingmall.utils.Validator;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -12,35 +14,28 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import static com.example.shoppingmall.utils.ApiUtils.error;
+import static com.example.shoppingmall.utils.ApiUtils.success;
+
 @Slf4j
 @RestController
 @AllArgsConstructor
     public class ProductController {
     private ProductService productService;
 
-
-
     @PostMapping("/products")
-    public ResponseEntity registerProduct(@RequestBody Product product) {
-        if (Validator.isAlpha(product.getName()) && Validator.isNumber(product.getPrice())) {
-            log.info(product.getName());
-            Product savedProduct = productService.registerProduct(product);
+    public ApiUtils.ApiResult registerProduct(@Valid @RequestBody ProductDto productDto) {
+        if (Validator.isNumber(productDto.getPrice())) {
+            Product savedProduct = productService.registerProduct(productDto);
 
-            try {
-               log.info(savedProduct.getName());
-            } catch (NullPointerException e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            return success(savedProduct, HttpStatus.CREATED);
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return error("가격의 형식은 숫자입니다.", HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> findProducts(@RequestParam int limit, @RequestParam int currentPage, @RequestParam(required = false) Integer categoryId) {
+    public ApiUtils.ApiResult findProducts(@RequestParam int limit, @RequestParam int currentPage, @RequestParam(required = false) Integer categoryId) {
         log.info("limit = {}", limit);
         log.info("currentPage = {}", currentPage);
         log.info("categoryId = {}", categoryId);
@@ -48,28 +43,28 @@ import java.util.Map;
         // TODO null 체크는 어디서 해야할까?
         if(categoryId == null){
             List<Product> products = productService.findProducts(limit, currentPage);
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            return success(products, HttpStatus.OK);
         } else {
             List<Product> products = productService.findProducts(limit, currentPage, categoryId);
-            return new ResponseEntity<>(products, HttpStatus.OK);
+            return success(products, HttpStatus.OK);
         }
 
     }
 
     @GetMapping("/products/{id}")
-    public ResponseEntity<Product> findProduct(@PathVariable int id) {
+    public ApiUtils.ApiResult findProduct(@PathVariable int id) {
         // 1. Product 반환 필드 : id가 없어요
         // 2. id 숫자만 들어온 거 맞는지 유효성 검사 추가
         if (!Validator.isNumber(id)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return error("id의 형식은 숫자입니다.", HttpStatus.BAD_REQUEST);
         }
 
         Product resultProduct = productService.findProduct(id);
 
         if (resultProduct == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_EXTENDED);
+            return error("해당하는 상품이 없습니다.", HttpStatus.NOT_EXTENDED);
         }
-        return new ResponseEntity<>(resultProduct, HttpStatus.OK);
+        return success(resultProduct, HttpStatus.OK);
     }
 
     @DeleteMapping("/products/{id}")
