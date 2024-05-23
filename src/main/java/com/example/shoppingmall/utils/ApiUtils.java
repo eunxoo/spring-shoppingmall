@@ -12,6 +12,10 @@ public class ApiUtils {
         return new ApiResult(true, data, null);
     }
 
+    public static <T> ApiResult<T> success(T data,HttpStatus httpStatus) {
+        return new ApiResult(true, data, httpStatus, null);
+    }
+
     public static <M> ApiResult<M> error(M message, HttpStatus httpStatus) {
         return new ApiResult(false,
                 null,
@@ -24,7 +28,14 @@ public class ApiUtils {
 
         boolean success;
         T response;
+        HttpStatus httpStatus;
         ApiError error;
+
+        public ApiResult(boolean success, T response, ApiError error) {
+            this.success = success;
+            this.response = response;
+            this.error = error;
+        }
     }
 
     @Getter
